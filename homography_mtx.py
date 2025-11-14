@@ -167,5 +167,5 @@ def locate_die(image, calib=False):
    if num_dice==0:
       print("\n\n\nNo dice detected! Quitting...")
       quit()
-   detect_and_count.show_img(image,'Table Image','Locations are rounded to 2 d.p.')
+   # detect_and_count.show_img(image,'Table Image','Locations are rounded to 2 d.p.')
    return 1

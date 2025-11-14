@@ -16,8 +16,18 @@ import json
 
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
-x_offset = 45.0
-y_offset = 50.0
+x_offset = 38.0
+y_offset = -48
+die_size = 80
+
+# x orig is 356
+# actual is 345
+
+# y orig is 866.71
+# actual is 872.278
+
+
+rot_offset = 25.899
 dj=robot(dj_ip)
 dj.set_speed(300)
 home_pos_joint = [0.0,0.0,0.0,0.0,-90.0,30.0]
@@ -26,20 +36,35 @@ place_back=[839,-24,66]
 
 # MAX:+90,-150 for wrist
 
-def pick_and_place(loc_1,angle,loc_2=place_back):
+def pick_and_place(loc_1,rot,die_num,loc_2=place_back.copy()):
+    loc_2[0]-=(die_size*die_num)
+    angle=rot+rot_offset
     # Open grip
     dj.schunk_gripper('open')
-    # pick up from loc 1
-    dj.write_cartesian_position(loc_1[0],loc_1[1],z_table+100,-179.5,0,angle)
-    dj.write_cartesian_position(loc_1[0],loc_1[1],z_table,-179.5,0,angle)
-    dj.write_cartesian_position(loc_1[0],loc_1[1],z_table+100,-179.5,0,angle)
+    # above loc 1
+    pos=[loc_1[0],loc_1[1],z_table+100,-179,0.0,angle]
+    dj.write_cartesian_position(pos)
+    # on loc 1
+    pos=[loc_1[0],loc_1[1],z_table,-179,0.0,angle]
+    dj.write_cartesian_position(pos)
     # Close grip
     dj.schunk_gripper('close')
-    # place at loc 2
-    dj.write_cartesian_position(loc_2[0],loc_2[1],loc_2[2]+100,-179.5,0,28)
-    dj.write_cartesian_position(loc_2[0],loc_2[1],loc_2[2],-179.5,0,28)
+    # above pos 1
+    pos=[loc_1[0],loc_1[1],z_table+100,-179,0.0,angle]
+    dj.write_cartesian_position(pos)
+    
+    # above loc 2
+    pos=[loc_2[0],loc_2[1],loc_2[2]+100,-179,0.0,28]
+    dj.write_cartesian_position(pos)
+    # on loc 2
+    pos=[loc_2[0],loc_2[1],loc_2[2],-179,0.0,28]
+    dj.write_cartesian_position(pos)
     # Open grip
-    dj.schunk_gripper('close')
+    dj.schunk_gripper('open')
+    # above loc 2
+    pos=[loc_2[0],loc_2[1],loc_2[2]+100,-179,0.0,28]
+    dj.write_cartesian_position(pos)
+    
     
 
 def main():
@@ -61,13 +86,20 @@ def main():
         # x,y,w,h,r
         if(img_coords[i][0]<610):
             num_die+=1
-            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3],"homography_mtx_DJ.txt")
+            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3],"homography_mtx_DJ.txt",x_offset=x_offset,y_offset=y_offset)
             coords.append((float(x),float(y)))
             loc=[float(x),float(y)]
-            # pick_and_place(loc,img,img_coords[i][4])
+            # pick_and_place(loc,img_coords[i][4],num_die)
     print("---Real World Coordinates---")
     print(coords)
+    dj.write_joint_pose(home_pos_joint)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 main()
+
+
+
+# 1.6 is orig (img)
+# 27.535 is actual
+
