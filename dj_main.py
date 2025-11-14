@@ -1,5 +1,6 @@
 #coding=utf-8
 import cv2
+import homography_mtx
 import numpy as np
 import mvsdk
 import platform
@@ -12,7 +13,6 @@ sys.path.append('../robotics/FANUC-Ethernet_IP_Drivers/src/')
 from robot_controller import robot
 import paho.mqtt.client as mqtt_client
 import json
-import homography_mtx
 
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
@@ -24,6 +24,7 @@ home_pos_joint = [0.0,0.0,0.0,0.0,-90.0,30.0]
 z_table=125
 place_back=[839,-24,66]
 
+# MAX:+90,-150 for wrist
 
 def pick_and_place(loc_1,angle,loc_2=place_back):
     # Open grip
@@ -43,11 +44,6 @@ def pick_and_place(loc_1,angle,loc_2=place_back):
 
 def main():
     dj.write_joint_pose(home_pos_joint)
-    
-    # dj.schunk_gripper('close')
-    # dj.schunk_gripper('open')
-
-    # dj.write_joint_pose(home_pos_joint)
 
     coords=[]
     
@@ -65,13 +61,13 @@ def main():
         # x,y,w,h,r
         if(img_coords[i][0]<610):
             num_die+=1
-            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3])
+            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3],"homography_mtx_DJ.txt")
             coords.append((float(x),float(y)))
             loc=[float(x),float(y)]
-            pick_and_place(loc,img,img_coords[i][4])
+            # pick_and_place(loc,img,img_coords[i][4])
     print("---Real World Coordinates---")
     print(coords)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-        
+
 main()

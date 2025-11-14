@@ -31,6 +31,7 @@ def read_H_mtx(filename="homography_mtx.txt"):
    Returns:
       H: loaded H mtx
    """
+   # print(f"MATX FILE NAME IN READ_H_MTX(): {filename}")
    H_loaded = np.loadtxt(filename)
    return H_loaded
 
@@ -54,7 +55,7 @@ def calibrate_H_mtx():
    save_H_mtx(H)
 
       
-def convert_pix_to_robot_coords(x,y,w,h,matx="homography_mtx.txt",x_offset=0,y_offset=0):
+def convert_pix_to_robot_coords(x,y,w,h,matx,x_offset=0,y_offset=0):
    """converts some pixel coordinate to a robot coordinate
          offsets will be different depending on the robot
 
@@ -68,6 +69,7 @@ def convert_pix_to_robot_coords(x,y,w,h,matx="homography_mtx.txt",x_offset=0,y_o
        tuple: (x,y) robot coordinate
    """
    # Read in H mtx
+   # print(f"MATX FILE NAME IN CONVERT PIX: {matx}")
    H = read_H_mtx(matx)
    pixel = np.array([x, y, 1], dtype=np.float32)
    real = H @ pixel
@@ -145,7 +147,7 @@ def locate_die(image, calib=False):
          
          x, y, w, h = cv2.boundingRect(contour)
          # Going to look different if not sending mqtt... will read in from dictionary
-         (x_coord,y_coord)=convert_pix_to_robot_coords(x,y,w,h)
+         (x_coord,y_coord)=convert_pix_to_robot_coords(x,y,w,h,matx="homography_mtx_DJ.txt")
          if calib:
             return x,y,w,h
          with open('img_die_loc.txt', 'a') as file:
