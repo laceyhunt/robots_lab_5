@@ -107,7 +107,7 @@ def locate_die(image, calib=False):
    # Ignore table
    cv2.rectangle(image, (0,0), (1280,400),(0,0,0),-1)
    with open('img_die_loc.txt', 'w') as file:
-      file.write("Die locations from image (x,y,w,h)\n")
+      file.write("Die locations from image (x,y,w,h,angle)\n")
    hsv_img = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
    # show_img(hsv_img,'2','2: HSV Image')
    lower_yellow = np.array([10,20,10])
@@ -149,7 +149,7 @@ def locate_die(image, calib=False):
          if calib:
             return x,y,w,h
          with open('img_die_loc.txt', 'a') as file:
-               file.write(f"{float(x)},{float(y)},{float(w)},{float(h)}\n")
+               file.write(f"{float(x)},{float(y)},{float(w)},{float(h)},{float(angle)}\n")
          cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Green bounding box
          # Define region of interest (new img with those coords)
          die_face = median[y:(y + h), x:(x + w)].copy()
