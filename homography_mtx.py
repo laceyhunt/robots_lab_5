@@ -68,7 +68,7 @@ def convert_pix_to_robot_coords(x,y,w,h,x_offset=100,y_offset=120):
        tuple: (x,y) robot coordinate
    """
    # Read in H mtx
-   H = read_H_mtx("dj_homography_mtx.txt")
+   H = read_H_mtx("homography_mtx_DJ.txt")
    pixel = np.array([x, y, 1], dtype=np.float32)
    real = H @ pixel
    real /= real[2]  # normalize
@@ -110,8 +110,8 @@ def locate_die(image, calib=False):
       file.write("Die locations from image (x,y,w,h)\n")
    hsv_img = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
    # show_img(hsv_img,'2','2: HSV Image')
-   lower_yellow = np.array([15,40,40])
-   upper_yellow = np.array([25,255,255])
+   lower_yellow = np.array([10,20,10])
+   upper_yellow = np.array([30,255,255])
    mask = cv2.inRange(hsv_img,lower_yellow,upper_yellow)
    median = cv2.medianBlur(mask,5)
    # show_img(mask,'3','3: Mask')
