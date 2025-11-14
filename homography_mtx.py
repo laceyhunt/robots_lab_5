@@ -54,7 +54,7 @@ def calibrate_H_mtx():
    save_H_mtx(H)
 
       
-def convert_pix_to_robot_coords(x,y,w,h,x_offset=100,y_offset=120):
+def convert_pix_to_robot_coords(x,y,w,h,matx="homography_mtx.txt",x_offset=0,y_offset=0):
    """converts some pixel coordinate to a robot coordinate
          offsets will be different depending on the robot
 
@@ -68,7 +68,7 @@ def convert_pix_to_robot_coords(x,y,w,h,x_offset=100,y_offset=120):
        tuple: (x,y) robot coordinate
    """
    # Read in H mtx
-   H = read_H_mtx("homography_mtx_DJ.txt")
+   H = read_H_mtx(matx)
    pixel = np.array([x, y, 1], dtype=np.float32)
    real = H @ pixel
    real /= real[2]  # normalize
