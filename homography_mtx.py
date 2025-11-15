@@ -129,7 +129,7 @@ def locate_die(image, calib=False):
          print(cv2.contourArea(contour))
          
          # CHECK FOR CLUSTERS!
-         if cv2.contourArea(contour) > 3500:
+         if cv2.contourArea(contour) > 5000:
             break_cluster(0,0)                  # Will be different for each person, will write
             return 0
          num_dice+=1
