@@ -137,8 +137,11 @@ def locate_die(image, calib=False):
          # Get rotated rectangle
          rect = cv2.minAreaRect(contour)
          box = cv2.boxPoints(rect)
-         box = np.intp(box)
+         box = np.int32(box)
+         cv2.drawContours(image,[box],0,(0,0,255),2)
          (_,_), (wid, hei), angle = rect
+         if wid < hei:
+            angle = angle + 90
 
          # Optional: normalize angle so long side aligns with horizontal
          # if wid < hei:
@@ -168,4 +171,6 @@ def locate_die(image, calib=False):
       print("\n\n\nNo dice detected! Quitting...")
       quit()
    # detect_and_count.show_img(image,'Table Image','Locations are rounded to 2 d.p.')
+   # cv2.waitKey(0)
+   # cv2.destroyAllWindows()
    return 1
