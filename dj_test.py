@@ -8,15 +8,16 @@ from standardbots import models, StandardBotsRobot
 import time
 import random
 import sys
-sys.path.append('fanuc_ethernet_ip_drivers/src')
+sys.path.append('../robotics/FANUC-Ethernet_IP_Drivers/src/')
 from robot_controller import robot
 import paho.mqtt.client as mqtt_client
 import json
+import homography_mtx
 
 
 dj_ip = '10.8.4.16'
 bill_ip = '10.8.4.6'
-z_table=125
+z_table=130
 
 dj=robot(dj_ip)
 # open_gripper_params = {
@@ -35,14 +36,14 @@ def home_robot():
     dj.write_joint_pose(home_position)
     time.sleep(1)
 def pickup_die(x, y, z=z_table):
-    dj.write_cartesian_position([x, y, z + 100.0, -179.0, 0, -130.0])
+    dj.write_cartesian_position([x, y, z + 100.0, -179.0, 0, 30])
     time.sleep(0.25)
-    dj.write_cartesian_position([x, y, z, -179.0, 0, -130.0])
+    dj.write_cartesian_position([x, y, z, -179.0, 0, 30])
     time.sleep(0.25)
     dj.schunk_gripper('close')
     time.sleep(1)
     time.sleep(0.25)
-    dj.write_cartesian_position([x, y, z + 100.0, -179.0, 0, -130.0])
+    dj.write_cartesian_position([x, y, z + 100.0, -179.0, 0, 30])
     time.sleep(0.25)
 
 def save_H_mtx(H):
@@ -69,22 +70,22 @@ def find_die_in_image():
     # Send robot to X,Y and pick up
 
 def find_homography_matrix():
-    pickup_die(838.9059448242188, -353.26605224609375, 123.34469604492188)
+    pickup_die(808.51, 355.48, z_table)
     #dj.write_cartesian_position([838.9059448242188, -353.26605224609375, 123.34469604492188, -179.0, 0, -130.0])
     offset = 300.0
-    px = 550.0
-    py = -550.0
-    dj.write_cartesian_position([px, py, z_table, -179.0, 0, -130.0])
+    px = 450.0
+    py = 650.0
+    dj.write_cartesian_position([px, py, z_table+100, -179, 0, 30])
     time.sleep(1)
-    dj.write_cartesian_position([px, py, z_table-100, -179.0, 0, -130.0])
+    dj.write_cartesian_position([px, py, z_table, -179, 0, 30])
     dj.schunk_gripper('open')
     time.sleep(1)
-    dj.write_cartesian_position([px, py, z_table, -179.0, 0, -130.0])
+    dj.write_cartesian_position([px, py, z_table+100, -179, 0, 30])
     home_robot()
     real_points = np.array([
     [px,py],
-    [px,py - offset],
-    [px - offset,py - offset],
+    [px,py + offset],
+    [px - offset,py + offset],
     [px - offset,py],
     ], dtype=np.float32)
     
@@ -99,18 +100,19 @@ def find_homography_matrix():
     for i in range(0,4):
         # Move the robot out of the way
         img=detect_and_count.take_photo()
-        x,y,w,h = detect_and_count.find_die(img)
+        x,y,w,h = homography_mtx.locate_die(img, calib=True)
         # Save die center coordinates
         image_points[i]=[(x+(0.5*w)),(y+(0.5*h))]
         # Pick die back up
         pickup_die(float(real_points[(i) % 4][0]), float(real_points[(i) % 4][1]))
-        dj.write_cartesian_position([float(real_points[(i) % 4][0]), float(real_points[(i) % 4][1]), 223.70266723632812, -179.0, 0, -130.0])
-        dj.write_cartesian_position([float(real_points[(i + 1) % 4][0]), float(real_points[(i + 1) % 4][1]), 123.70266723632812, -179.0, 0, -130.0])
+        dj.write_cartesian_position([float(real_points[(i) % 4][0]), float(real_points[(i) % 4][1]), z_table+100, -179.0, 0, 30])
+        dj.write_cartesian_position([float(real_points[(i + 1) % 4][0]), float(real_points[(i + 1) % 4][1]), z_table+100, -179.0, 0, 30])
+        dj.write_cartesian_position([float(real_points[(i + 1) % 4][0]), float(real_points[(i + 1) % 4][1]), z_table+2, -179.0, 0, 30])
         time.sleep(1)
-        dj.write_cartesian_position([float(real_points[(i+1) % 4][0]), float(real_points[(i+1) % 4][1]), 123.70266723632812, -179.0, 0, -130.0])
+        dj.write_cartesian_position([float(real_points[(i+1) % 4][0]), float(real_points[(i+1) % 4][1]), z_table, -179.0, 0, 30])
         dj.schunk_gripper('open')
         time.sleep(1)
-        dj.write_cartesian_position([float(real_points[(i + 1) % 4][0]), float(real_points[(i + 1) % 4][1]), 223.70266723632812, -179.0, 0, -130.0])
+        dj.write_cartesian_position([float(real_points[(i + 1) % 4][0]), float(real_points[(i + 1) % 4][1]), z_table+100, -179.0, 0, 30])
         home_robot()
     
     print("successfully gathered points")

@@ -100,7 +100,7 @@ def break_cluster(coordinate,width=1, height=2):
    # Go home
 
 
-def locate_die(image, calib=False):
+def locate_die(image, calib=False, h_mtx = "homography.txt"):
    """_summary_
 
    Args:
@@ -150,7 +150,7 @@ def locate_die(image, calib=False):
          
          x, y, w, h = cv2.boundingRect(contour)
          # Going to look different if not sending mqtt... will read in from dictionary
-         (x_coord,y_coord)=convert_pix_to_robot_coords(x,y,w,h,matx="homography_mtx_DJ.txt")
+         (x_coord,y_coord)=convert_pix_to_robot_coords(x,y,w,h,matx=h_mtx)
          if calib:
             return x,y,w,h
          with open('img_die_loc.txt', 'a') as file:

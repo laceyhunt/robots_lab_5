@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import mvsdk
 import platform
+import json
 
 # Text params
 fontFace = cv2.FONT_HERSHEY_SIMPLEX 
@@ -10,6 +11,24 @@ red = (0, 0, 255)
 blue = (255, 0, 0) 
 thickness = 2
 num_windows=0
+
+def calibrate_camera():
+    """Calibrate the camera--only needs to be used once
+
+    Returns:
+        new_mtx, new_dist: camera params necessary for undistorting new images
+        
+        usage:  
+        image = cv2.imread("photo.jpg")
+        undistorted = cv2.undistort(image, camera_matrix, dist_coeffs)
+    """
+    # Load camera parameters from JSON file
+    with open('camera-params.json', 'r') as json_file:
+        camera_params = json.load(json_file)
+    new_mtx = np.array(camera_params['camera_matrix'])
+    new_dist = np.array(camera_params['distortion_coefficients'])
+    return new_mtx, new_dist
+
 def show_img(img,window='default',text=None):
     """shows an image on a resized window
 
@@ -63,7 +82,7 @@ def take_photo():
     mvsdk.CameraSetTriggerMode(hCamera, 0)
     # Manual exposure, exposure time = 80 ms
     mvsdk.CameraSetAeState(hCamera, 0)
-    mvsdk.CameraSetExposureTime(hCamera,29 * 1000)
+    mvsdk.CameraSetExposureTime(hCamera,50 * 1000)
     # Start the SDK’s internal image capture thread
     mvsdk.CameraPlay(hCamera)
     # Allocate it according to the camera’s maximum resolution
@@ -86,7 +105,10 @@ def take_photo():
     mvsdk.CameraUnInit(hCamera)
     # Free the frame buffer
     mvsdk.CameraAlignFree(pFrameBuffer)
-    return ret_frame
+
+    camera_matrix, dist_coeffs = calibrate_camera()
+    undistorted = cv2.undistort(ret_frame, camera_matrix, dist_coeffs)
+    return undistorted
 
 def count_pips(img,orig_x, orig_y,die_num):
     """counts pips in a cropped image

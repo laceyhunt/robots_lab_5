@@ -16,8 +16,8 @@ import json
 
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
-x_offset = 40.0 
-y_offset = -60
+x_offset = 54
+y_offset = 53
 die_size = 88
 
 # x orig is 328
@@ -43,8 +43,9 @@ place_back=[839,-24,66]
 
 def pick_and_place(loc_1,rot,die_num,loc_2=place_back.copy()):
 #However much less than 90 is added to 30
-    
-    loc_2[0]-=(die_size*(die_num-1))
+    loc_2=place_back.copy()
+    print(f"Picking up die num {die_num}")
+    loc_2[2]+=(die_size*(die_num-1))
     # six_offset=90-rot
     roll=30
     rot_off=90-rot
@@ -88,7 +89,7 @@ def main():
     cluster_free = 0
     while not cluster_free:
        img=detect_and_count.take_photo()
-       cluster_free=homography_mtx.locate_die(img)
+       cluster_free=homography_mtx.locate_die(img, h_mtx="homography_mtx_dj.txt")
        time.sleep(2)
     img_coords = detect_and_count.read_dice_pixel_coords()
     print("---Image Coordinates---")
@@ -99,7 +100,7 @@ def main():
         # x,y,w,h,r
         if(img_coords[i][0]<610):
             num_die+=1
-            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3],"homography_mtx_DJ.txt",x_offset=x_offset,y_offset=y_offset)
+            (x,y)=homography_mtx.convert_pix_to_robot_coords(img_coords[i][0],img_coords[i][1],img_coords[i][2],img_coords[i][3],"homography_mtx_dj.txt",x_offset=x_offset,y_offset=y_offset)
             coords.append((float(x),float(y)))
             loc=[float(x),float(y)]
             pick_and_place(loc,img_coords[i][4],num_die)
