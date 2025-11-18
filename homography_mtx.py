@@ -80,26 +80,6 @@ def convert_pix_to_robot_coords(x,y,w,h,matx,x_offset=0,y_offset=0):
    # print(X, Y)
    return (X,Y)
 
-def break_cluster(coordinate,width=1, height=2):
-   """break up a cluster
-
-   Args:
-       coordinate (Tuple): x,y robot coord of center of cluster
-       width (float, optional): width of cluster in pixels. Defaults to None.
-       height (_type_, optional): height of cluster in pixels. Defaults to None.
-   """
-   print("cluster found!")
-   if(width>height):
-      # go to bottom of table with y=coordinate y
-      # Move robot up to x=coordinate x + some 
-      pass
-   elif(height>=width):
-      # go to side of table with x=coordinate x
-      # Move robot sideways to y=coordinate y + some 
-      pass
-   # Go home
-
-
 def locate_die(image, calib=False, h_mtx = "homography.txt"):
    """_summary_
 
@@ -128,10 +108,6 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
       if cv2.contourArea(contour) > 1500:  # For the outside of the die...
          print(cv2.contourArea(contour))
          
-         # CHECK FOR CLUSTERS!
-         if cv2.contourArea(contour) > 5000:
-            break_cluster(0,0)                  # Will be different for each person, will write
-            return 0
          num_dice+=1
          
          # Get rotated rectangle
@@ -155,6 +131,11 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
             return x,y,w,h
          with open('img_die_loc.txt', 'a') as file:
                file.write(f"{float(x)},{float(y)},{float(w)},{float(h)},{float(angle)}\n")
+               
+         # CHECK FOR CLUSTERS!
+         if cv2.contourArea(contour) > 5000:
+            return 0
+         
          cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Green bounding box
          # Define region of interest (new img with those coords)
          die_face = median[y:(y + h), x:(x + w)].copy()
