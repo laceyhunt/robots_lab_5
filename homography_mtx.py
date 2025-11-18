@@ -87,7 +87,8 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
        image (_type_): _description_
    """
    # Ignore table
-   cv2.rectangle(image, (0,0), (1280,400),(0,0,0),-1)
+   cv2.rectangle(image, (0,0), (1280,280),(0,0,0),-1)
+
    with open('img_die_loc.txt', 'w') as file:
       file.write("Die locations from image (x,y,w,h,angle)\n")
    hsv_img = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
