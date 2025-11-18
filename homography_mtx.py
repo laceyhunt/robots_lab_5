@@ -127,20 +127,22 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
          x, y, w, h = cv2.boundingRect(contour)
          # Going to look different if not sending mqtt... will read in from dictionary
          (x_coord,y_coord)=convert_pix_to_robot_coords(x,y,w,h,matx=h_mtx)
-         if calib:
-            return x,y,w,h
-         with open('img_die_loc.txt', 'a') as file:
-               file.write(f"{float(x)},{float(y)},{float(w)},{float(h)},{float(angle)}\n")
-               
-         # CHECK FOR CLUSTERS!
-         if cv2.contourArea(contour) > 5000:
-            return 0
          
          cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Green bounding box
          # Define region of interest (new img with those coords)
          die_face = median[y:(y + h), x:(x + w)].copy()
          num_pips=detect_and_count.count_pips(die_face,x,y, num_dice)
          text = str(num_pips)+" pips"
+         
+         if calib:
+            return x,y,w,h
+         with open('img_die_loc.txt', 'a') as file:
+               file.write(f"{float(x)},{float(y)},{float(w)},{float(h)},{float(angle)},{num_pips}\n")
+               
+         # CHECK FOR CLUSTERS!
+         if cv2.contourArea(contour) > 5000:
+            return 0
+         
          text2 = str((round(float(x_coord), 2), round(float(y_coord), 2)))
          # print(f"Found die # {str(num_dice)}")
          org1 = (x, y-5)

@@ -38,7 +38,7 @@ coord_topic = 'topics/coords'
 # global variable that stores the latest decoded mqtt packet
 message_i_got=None
 
-robot_ip = '10.8.4.6' # Bill (OnRobot)
+# robot_ip = '10.8.4.6' # Bill (OnRobot)
 # robot_ip = '10.8.4.16' # DJ (Schunk)
 
 def connect_mqtt():
@@ -88,7 +88,7 @@ def subscribe(client: mqtt_client, topic):
          msg (json object): packet received 
       """
       global message_recieved, message_i_got
-      print(f"Lacey Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+      print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
       message_recieved = True
       message_i_got=decode_json(msg.payload.decode())
 
@@ -111,7 +111,7 @@ def package_json(coordinate_list=None,cluster_flag=None):
    elif(cluster_flag):
       data = {
          "cluster_flag": cluster_flag,  # Options: "dj", "theo", "none", "theo_done"
-         "coordinate": coordinate_list[0]
+         "coordinate": coordinate_list[-1]
          }
    encoded_msg = json.dumps(data, indent=4)
    return encoded_msg
