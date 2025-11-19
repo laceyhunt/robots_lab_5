@@ -17,9 +17,11 @@ import mqtt
 
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
-x_offset = 52
-y_offset = 54
-die_size = 81
+x_offset = 59
+y_offset = 60
+# x_offset = 0
+# y_offset = 0
+die_size = 88
 
 # x orig is 328
 # actual is 342.239
@@ -37,7 +39,7 @@ dj=robot(dj_ip)
 dj.set_speed(300)
 home_pos_joint = [0.0,0.0,0.0,0.0,-90.0,30.0]
 z_table=125
-z_offset=100
+z_offset=150
 place_back=[810.67,238.28,66]
 
 # MAX:+90,-150 for wrist
@@ -91,6 +93,7 @@ def break_cluster(client):
     bottom_table = 890
     side_table = 240
     z_clear = 112
+    clear_dist=40
     pix_coords = detect_and_count.read_dice_pixel_coords()
     if pix_coords[-1][0] < 680:
         # DJ cluster
@@ -103,15 +106,15 @@ def break_cluster(client):
         if(width>height):
             print("short, fat cluster")
             # go to bottom of table with y=coordinate y
-            off_table_pos=[bottom_table,float(y+(0.5*height)),z_clear,-179,0.0,28]
+            off_table_pos=[bottom_table,side_table+210,z_clear,-179,0.0,28]
             # Move robot up to x=coordinate x + some 
-            pos_clear=[float(x+width+20),float(y+(0.5*height)),z_clear,-179,0.0,28]
+            pos_clear=[float(x+x_offset+clear_dist),float(y+y_offset+clear_dist),z_clear,-179,0.0,28]
         elif(height>=width):
             print("tall, skinny cluster")
             # go to side of table with x=coordinate x
-            off_table_pos=[float(x+(0.5*width)),side_table,z_clear,-179,0.0,28]
+            off_table_pos=[float(x+x_offset),side_table,z_clear,-179,0.0,28]
             # Move robot sideways to y=coordinate y + some 
-            pos_clear=[float(x+(0.5*width)),float(y+height),z_clear,-179,0.0,28]
+            pos_clear=[float(x+x_offset+clear_dist),float(y+y_offset+clear_dist),z_clear,-179,0.0,28]
         print("Moving off table...")
         off_up = off_table_pos.copy()
         off_up[2] = z_table+100
@@ -189,7 +192,3 @@ def main():
     client.disconnect()
 
 main()
-
-# 1.6 is orig (img)
-# 27.535 is actual
-
