@@ -46,6 +46,8 @@ def show_img(img,window='default',text=None):
     cv2.namedWindow(window, cv2.WINDOW_NORMAL)
     cv2.resizeWindow(window, 900, 720)
     cv2.imshow(window, print_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 def take_photo():
     """takes and returns photo
@@ -134,7 +136,7 @@ def count_pips(img,orig_x, orig_y,die_num):
             # cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 6)
             cv2.rectangle(img, (orig_x+x, orig_y+y), (orig_x+x + w, orig_y+y + h), (0, 0, 0), 2)
     text = "Die "+ str(die_num)+ " has " + str(num_pips)+" pips"
-    print(text)
+    # print(text)
     return num_pips
 
 def read_dice_pixel_coords():

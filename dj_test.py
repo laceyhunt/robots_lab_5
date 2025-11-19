@@ -72,9 +72,9 @@ def find_die_in_image():
 def find_homography_matrix():
     pickup_die(808.51, 355.48, z_table)
     #dj.write_cartesian_position([838.9059448242188, -353.26605224609375, 123.34469604492188, -179.0, 0, -130.0])
-    offset = 300.0
-    px = 450.0
-    py = 650.0
+    offset = 500.0
+    px = 750.0
+    py = 350.0
     dj.write_cartesian_position([px, py, z_table+100, -179, 0, 30])
     time.sleep(1)
     dj.write_cartesian_position([px, py, z_table, -179, 0, 30])
