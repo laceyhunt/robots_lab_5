@@ -17,23 +17,11 @@ import mqtt
 
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
+
 x_offset = 59
 y_offset = 60
-# x_offset = 0
-# y_offset = 0
 die_size = 88
-
-# x orig is 328
-# actual is 342.239
-
-# y orig is 951.7
-# actual is 959.740
-
-
 rot_offset = 30
-
-# J6 was -43.101
-# Should be -8.987
 
 dj=robot(dj_ip)
 dj.set_speed(300)
@@ -45,6 +33,13 @@ place_back=[810.67,238.28,66]
 # MAX:+90,-150 for wrist
 
 def pick_and_place(loc_1,rot,die_num):
+    """pick up die from table and line up
+
+    Args:
+        loc_1 (coordinate): coord to pick up from [x,y,angle]
+        rot: rotation of die
+        die_num (int): die picked up in order
+    """
     # However much less than 90 is added to 30
     loc_2=place_back.copy()
     print(f"Picking up die num {die_num}")
@@ -65,9 +60,6 @@ def pick_and_place(loc_1,rot,die_num):
     dj.schunk_gripper('close')
     # above pos 1
     dj.write_cartesian_position(pos)
-    
-    # pos=[loc_1[0],loc_1[1],z_table+100,-179,0.0,angle]
-    # dj.write_cartesian_position(pos)
     
     # above loc 2
     pos=[loc_2[0],loc_2[1],loc_2[2]+100,-179,0.0,28]

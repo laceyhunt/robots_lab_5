@@ -96,20 +96,10 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
    # show_img(hsv_img,'2','2: HSV Image')
    lower_yellow = np.array([16,45,45])
    upper_yellow = np.array([30,255,255])
-   
-   # lower_yellow = np.array([25,100,255]) # Sarah
-   # lower_yellow = np.array([17,20,10]) #these 2 are the old ones
-   # upper_yellow = np.array([30,255,255])
 
    mask = cv2.inRange(hsv_img,lower_yellow,upper_yellow)
    median = cv2.medianBlur(mask,5)
-   # detect_and_count.show_img(hsv_img)
-   # show_img(mask,'3','3: Mask')
-   
-   # EDGE detection?
-   # detect_and_count.show_img(median,"mask")
-   # detect_and_count.show_img(hsv_img,"hsv")
-   # detect_and_count.show_img(image)
+
    cv2.waitKey(0)
    cv2.destroyAllWindows()
    # # Find contours in the mask
@@ -130,20 +120,15 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
          box = np.int32(box)
          cv2.drawContours(image,[box],0,(0,0,255),2)
          (_,_), (wid, hei), angle = rect
+         # Option 1...
          # if wid < hei:
          #    angle = angle + 90
-         
          # normalize angle to [-45,45)
          if angle < -45:
             angle += 90
 
          # make it always positive (default 0)
          angle = abs(angle)
-
-         # Optional: normalize angle so long side aligns with horizontal
-         # if wid < hei:
-         #    angle = 90 + angle
-         # print(f"Die {num_dice} angle is {angle}")
          
          x, y, w, h = cv2.boundingRect(contour)
          if calib:
@@ -179,7 +164,4 @@ def locate_die(image, calib=False, h_mtx = "homography.txt"):
    detect_and_count.show_img(image)
    cv2.waitKey(0)
    cv2.destroyAllWindows()
-   # detect_and_count.show_img(image,'Table Image','Locations are rounded to 2 d.p.')
-   # cv2.waitKey(0)
-   # cv2.destroyAllWindows()
    return 1

@@ -25,9 +25,11 @@ topic = "robot/test"
 # Ip of DJ robot
 dj_ip = '10.8.4.16'
 bill_ip = '10.8.4.6'
+
 # Topic that DJ will publish to
 dj_topic = "robot/dj"
 theo_topic = "robot/theodore"
+
 bill=robot(bill_ip)
 open_gripper_params = {
     "width_in_mm":138,
@@ -39,11 +41,14 @@ close_onto_dice_params = {
         "force_in_newtons":40,
         "wait":True
 }
+
 home_position = [0.0,0.0,0.0,0.0,-90.0,-45.0]
 bill.write_joint_pose(home_position)
+
 def home_robot():
     bill.write_joint_pose(home_position)
     time.sleep(1)
+    
 def pickup_die(x, y, z=122.70266723632812, r= 0.0):
     r = 90 - r
     cartesian_pos = bill.read_current_cartesian_pose()
@@ -137,7 +142,6 @@ def break_cluster(x,y,w,h):
        width (float, optional): width of cluster in pixels. Defaults to None.
        height (_type_, optional): height of cluster in pixels. Defaults to None.
    """
-
    print("cluster found!")
    if(w>h):
       # go to bottom of table with y=coordinate y
@@ -151,7 +155,6 @@ def break_cluster(x,y,w,h):
       time.sleep(1)
       bill.write_cartesian_position([x - 50, y - 50, 180, 179.0, 0.0, 130.0])
       home_robot()
-      pass
    elif(h>=w):
       #570.2075805664062, -213.02224731445312, 166.31466674804688, -179.38247680664062, 1.405871033668518, -134.75782775878906
       # go to side of table with x=coordinate x
@@ -165,8 +168,6 @@ def break_cluster(x,y,w,h):
       time.sleep(1)
       bill.write_cartesian_position([x-50,y-50, 180, -179.0, 0.0, 130.0])
       home_robot()
-      pass
-   # Go home
 
 def main():
     bill.set_speed(300)
