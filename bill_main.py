@@ -73,7 +73,7 @@ def find_die_in_image():
     return X, Y
     # Send robot to X,Y and pick up
 def place_die_on_table(pip=0):
-    bill.write_cartesian_position([652.8466186523438 - 100*(pip), -240.7295837402344, 50.60589599609375 + 81*(die_count_on_table[pip]), -179.0, 0, 130.0])
+    bill.write_cartesian_position([652.8466186523438 - 100*(pip % 4), -240.7295837402344 if pip < 4 else 300.7295837402344, 55.60589599609375 + 85*(die_count_on_table[pip]), -179.0, 0, 130.0])
     bill.onRobot_gripper(**open_gripper_params)
     time.sleep(1)
     home_robot()
