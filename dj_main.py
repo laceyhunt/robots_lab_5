@@ -19,7 +19,7 @@ import mqtt
 dj_ip = '10.8.4.16'
 
 x_offset = 59
-y_offset = 60
+y_offset = 66
 die_size = 88
 rot_offset = 30
 
